@@ -1,7 +1,6 @@
 <template>
   <div class="medical-info-container">
     <!-- Header -->
-      <Header/>
     <!-- Main Content -->
     <div class="container mt-4">
       <!-- Instructions -->
@@ -19,7 +18,6 @@
               type="checkbox"
               name="aceptacionTerminos"
               id="terminos1"
-              value="false"
               v-model="datos.aceptacion_terminos"
             />
             <label class="form-check-label" for="terminos1">
@@ -32,7 +30,6 @@
               type="checkbox"
               name="aceptacionUsoDatos"
               id="terminos2"
-              value="false"
               v-model="datos.aceptacion_uso_datos"
             />
             <label class="form-check-label" for="terminos2">
@@ -43,9 +40,15 @@
 
         <!-- Next Button -->
         <div class="d-flex justify-content-end">
-          <button class="btn btn-next" @click="handleNext">
-            finalizar
+          <button class="btn btn-next" @click="handleNext" :disabled="loading">
+            <span v-if="loading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+            {{ loading ? 'Finalizando...' : 'Finalizar' }}
           </button>
+        </div>
+        
+        <!-- Error Message -->
+        <div v-if="errorMessage" class="alert alert-danger mt-3" role="alert">
+          {{ errorMessage }}
         </div>
       </div>
     </div>
@@ -56,24 +59,62 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import Header from '../common/Header.vue';
+import { usersAPI } from '@/services/api';
 // import { useFormularioStore } from '@/stores/formulario';
 
 // const store = useFormularioStore();
 
 const router = useRouter();
+const loading = ref(false);
+const errorMessage = ref('');
 
 const datos = ref({
-  aceptacion_terminos: '',
-  aceptacion_uso_datos: ''
+  aceptacion_terminos: false,
+  aceptacion_uso_datos: false
 });
 
-const handleNext = () => {
+const handleNext = async () => {
   console.log('Form data:', datos.value);
   
-  if (datos.value.aceptacion_terminos) {
+  // Validar que ambos términos estén aceptados
+  if (!datos.value.aceptacion_terminos || !datos.value.aceptacion_uso_datos) {
+    alert('Por favor, acepta todos los términos y condiciones antes de continuar.');
+    return;
+  }
+
+  loading.value = true;
+  errorMessage.value = '';
+
+  try {
+    // Obtener el ID del usuario desde localStorage
+    const userId = localStorage.getItem('userId');
+    
+    if (!userId) {
+      alert('Error: No se encontró información del usuario. Por favor, inicia sesión nuevamente.');
+      router.push('/');
+      return;
+    }
+
+    // Actualizar formulario_inicio a true en el backend
+    await usersAPI.updateFormularioInicio(userId, true);
+    
+    // Actualizar el objeto user en localStorage
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+      const user = JSON.parse(userStr);
+      user.formulario_inicio = true;
+      localStorage.setItem('user', JSON.stringify(user));
+    }
+
+    console.log('Formulario inicial completado exitosamente');
     router.push('/paginaInicio');
-  } else {
-    alert('Por favor, complete todos los campos antes de continuar.');
+    
+  } catch (error) {
+    console.error('Error al actualizar formulario inicial:', error);
+    errorMessage.value = error.response?.data?.detail || 'Error al completar el formulario';
+    alert('Error al completar el formulario. Por favor, intenta nuevamente.');
+  } finally {
+    loading.value = false;
   }
 };
 </script>

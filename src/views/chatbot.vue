@@ -1,6 +1,7 @@
 <template>
-  <Header />
+      <Header @toggle-mobile-menu="toggleSidebar" />
   <div class="container-fluid chatbot-container">
+
     <div class="row justify-content-center">
       <div class="col-12 col-lg-10 col-xl-8">
         <div class="card chat-card shadow-lg">
@@ -150,9 +151,13 @@
   </div>
 </template>
 
+
 <script setup>
 import { ref, onMounted, nextTick } from 'vue';
 import axios from 'axios';
+import { marked } from 'marked';
+import Header from '@/common/Header.vue';
+import Sidebar from '@/common/Sidebar.vue';
 
 // === Refs reactivos ===
 const messages = ref([]);
@@ -162,13 +167,27 @@ const conversationId = ref(null);
 const isConnected = ref(false);
 const pdfLoaded = ref(false);
 const messagesArea = ref(null);
-import Header from '@/common/Header.vue';
-import { marked } from 'marked'; // <-- Importamos marked
+const sidebarRef = ref(null);
 
-
+// URL de la API
 const apiUrl = 'http://localhost:8000';
 
+// Configurar axios para manejar errores globalmente
+axios.defaults.timeout = 500000; // 100 segundos timeout
+
+// === Configuración de Marked ===
+marked.setOptions({
+  breaks: true,
+  gfm: true,
+  headerIds: false,
+  mangle: false
+});
+
 // === Funciones ===
+const toggleSidebar = () => {
+  sidebarRef.value?.openMobileMenu();
+};
+
 const getCurrentTime = () => {
   const now = new Date();
   return now.toLocaleTimeString('es-ES', {
@@ -187,21 +206,25 @@ const scrollToBottom = async () => {
 const checkHealth = async () => {
   try {
     const response = await axios.get(`${apiUrl}/health`);
+    console.log('Respuesta de health:', response.data);
     isConnected.value = response.data.status === 'online';
-    pdfLoaded.value = response.data.pdf_loaded;
+    pdfLoaded.value = response.data.pdf_loaded || false;
+    
+    console.log('Estado del servidor:', response.data);
   } catch (error) {
     isConnected.value = false;
-    console.error('Error al conectar:', error);
+    pdfLoaded.value = false;
+    console.error('Error al conectar con el servidor:', error.message);
   }
 };
 
 const sendMessage = async () => {
-  if (!userInput.value.trim() || isTyping.value) return;
+  if (!userInput.value.trim() || !isConnected.value) return;
 
   const message = userInput.value.trim();
   userInput.value = '';
 
-  // Mensaje del usuario
+  // Agregar mensaje del usuario
   messages.value.push({
     role: 'user',
     content: message,
@@ -217,19 +240,36 @@ const sendMessage = async () => {
       conversation_id: conversationId.value
     });
 
+    console.log('Mensaje enviado:', message);
+
+    // Guardar el ID de conversación
     conversationId.value = response.data.conversation_id;
 
-    // Respuesta del asistente
+    // Agregar respuesta del asistente
     messages.value.push({
       role: 'assistant',
       content: response.data.response,
       timestamp: getCurrentTime()
     });
+
+    console.log('Respuesta recibida:', response.data);
   } catch (error) {
-    console.error('Error:', error);
+    console.error('Error al enviar mensaje:', error);
+    
+    let errorMessage = 'Lo siento, ocurrió un error al procesar tu mensaje.';
+    
+    if (error.code === 'ECONNABORTED') {
+      errorMessage = 'La solicitud tardó demasiado. Por favor intenta de nuevo.';
+    } else if (error.response) {
+      errorMessage = `Error del servidor: ${error.response.data.detail || error.response.statusText}`;
+    } else if (error.request) {
+      errorMessage = 'No se pudo conectar con el servidor. Verifica que esté corriendo en http://localhost:8000';
+      isConnected.value = false;
+    }
+
     messages.value.push({
       role: 'assistant',
-      content: 'Lo siento, ocurrió un error. Por favor verifica que el servidor esté corriendo.',
+      content: errorMessage,
       timestamp: getCurrentTime()
     });
   } finally {
@@ -242,8 +282,9 @@ const resetConversation = async () => {
   if (conversationId.value) {
     try {
       await axios.post(`${apiUrl}/reset/${conversationId.value}`);
+      console.log('Conversación reiniciada');
     } catch (error) {
-      console.error('Error al resetear:', error);
+      console.error('Error al resetear conversación:', error);
     }
   }
 
@@ -251,18 +292,23 @@ const resetConversation = async () => {
   conversationId.value = null;
   userInput.value = '';
 };
-// === NUEVA FUNCIÓN: Convertir Markdown a HTML ===
+
 const parseMarkdown = (text) => {
   if (!text) return '';
-  return marked(text, {
-    breaks: true,     // convierte \n en <br>
-    gfm: true         // soporta GitHub Flavored Markdown
-  });
+  try {
+    return marked.parse(text);
+  } catch (error) {
+    console.error('Error al parsear markdown:', error);
+    return text;
+  }
 };
 
 // === Ciclo de vida ===
-onMounted(() => {
-  checkHealth();
+onMounted(async () => {
+  await checkHealth();
+  
+  // Verificar conexión cada 30 segundos
+  setInterval(checkHealth, 30000);
 });
 </script>
 
@@ -278,6 +324,7 @@ onMounted(() => {
   min-height: 100vh;
   background: linear-gradient(135deg, #b6f1ed 0%, #7bddd6 100%);
   padding: 20px;
+  margin-top: 60px;
 }
 
 .chat-card {
@@ -314,7 +361,7 @@ onMounted(() => {
 
 .welcome-icon {
   font-size: 64px;
-  color: var(--primary-color);
+  color: #87e9e3;
 }
 
 .info-card {
@@ -332,7 +379,7 @@ onMounted(() => {
 
 .info-card i {
   font-size: 32px;
-  color: var(--primary-color);
+  color: #87e9e3;
   margin-bottom: 10px;
 }
 
@@ -438,7 +485,7 @@ onMounted(() => {
 .typing-indicator span {
   width: 8px;
   height: 8px;
-  background: var(--primary-color);
+  background: #01e3d4;
   border-radius: 50%;
   animation: bounce 1.4s infinite ease-in-out;
 }
@@ -476,12 +523,12 @@ onMounted(() => {
 }
 
 .chat-footer textarea:focus {
-  border-color: var(--primary-color);
+  border-color: #01e3d4;
   box-shadow: 0 0 0 0.2rem rgba(0, 167, 157, 0.25);
 }
 
 .chat-footer .btn-primary {
-  background: var(--primary-color);
+  background: #01e3d4;
   border: none;
   border-radius: 10px;
   padding: 12px 24px;
@@ -489,7 +536,7 @@ onMounted(() => {
 }
 
 .chat-footer .btn-primary:hover:not(:disabled) {
-  background: var(--primary-dark);
+  background: #08beb2;
   transform: scale(1.05);
 }
 
@@ -511,12 +558,12 @@ onMounted(() => {
 }
 
 .messages-area::-webkit-scrollbar-thumb {
-  background: var(--primary-color);
+  background: #01e3d4;
   border-radius: 4px;
 }
 
 .messages-area::-webkit-scrollbar-thumb:hover {
-  background: var(--primary-dark);
+  background: #01e3d4;
 }
 
 /* Responsive */

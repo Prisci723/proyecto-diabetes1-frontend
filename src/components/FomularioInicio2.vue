@@ -1,7 +1,6 @@
 <template>
   <div class="medical-info-container">
-    <!-- Header -->
-      <Header/>
+    <!-- Header --> 
 
     <!-- Main Content -->
     <div class="container mt-4">

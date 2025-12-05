@@ -1,15 +1,17 @@
 <template>
+
     <div>
-        <NavbarComponent />
-        <div class="container text-center mt-5">
+    <Header @toggle-menu="handleToggleMenu" />
+        <div class="container text-center espacio-header">
             <!-- Título -->
             <div class="welcome-banner text-center mb-4">
                 <h2>Glucosa Actual</h2>
             </div>
 
             <!-- Gráfico -->
-            <canvas id="glucosaChart" height="60"></canvas>
-            <p class="fw-bold mt-2">{{ glucosaActual }} mg/dL</p>
+             <div class=""> Esta es una aplicación para ayudar a pacientes con diabetes tipo 1 con el seguimiento de la enfermedad
+            
+             </div>
 
             <!-- Botones -->
             <div class="d-flex justify-content-center flex-wrap gap-3 mt-4">
@@ -29,68 +31,37 @@
 </template>
 
 <script setup>
-import NavbarComponent from '@/common/Header.vue';
-import { onMounted, ref } from "vue";
-import {
-    Chart,
-    BarController,  // ⬅️ Faltaba importar esto
-    BarElement,
-    CategoryScale,
-    LinearScale,
-    Tooltip,
-    Title,
-} from "chart.js";
-import router from '../router';
+import { ref } from "vue";
+import { useRouter } from 'vue-router';
+import Header from '@/common/Header.vue';
 
-// Registrar todos los componentes incluyendo BarController
-Chart.register(BarController, BarElement, CategoryScale, LinearScale, Tooltip, Title);
+const router = useRouter();
+const sidebarRef = ref(null);
+
+// Methods
+const handleToggleMenu = () => {
+  if (sidebarRef.value) {
+    sidebarRef.value.toggle()
+  }
+}
 
 const glucosaActual = ref((Math.random() * (180 - 70) + 70).toFixed(1));
 
 const funciones = [
-    { titulo: "Glucosa Actual", icon: "/src/assets/glucose.png", route : "/paginaInicio" },
-    { titulo: "Reconocimiento de Alimentos", icon: "/src/assets/comida.png", route : "/paginaInicio" },
-    { titulo: "Patrones glucémicos", icon: "/src/assets/analisis_patrones.png", route : "/paginaInicio" },
-    { titulo: "Optimización dosis de insulina", icon: "/src/assets/insulina.png", route : "/paginaInicio" },
+    { titulo: "Conteo de carbohidratos", icon: "/src/assets/comida.png", route : "/food-registration" },
+    { titulo: "Optimización dosis de insulina", icon: "/src/assets/insulina.png", route : "/insuline-bolus" },
+    { titulo: "Predicción de glucosa", icon: "/src/assets/glucose.png", route : "/glucose-prediction" },
+    { titulo: "Patrones glucémicos", icon: "/src/assets/analisis_patrones.png", route : "/glucose-pattern" },
     { titulo: "CHATBOT", icon: "/src/assets/chatbot.png", route : "/chatbot" },
 ];
-
-onMounted(() => {
-    const ctx = document.getElementById("glucosaChart").getContext("2d");
-    new Chart(ctx, {
-        type: "bar",
-        data: {
-            labels: [""],
-            datasets: [
-                {
-                    data: [glucosaActual.value],
-                    backgroundColor: (ctx) => {
-                        const value = ctx.raw;
-                        if (value < 70) return "#ff0000";
-                        if (value < 120) return "#00cc00";
-                        if (value < 180) return "#ffcc00";
-                        return "#ff6600";
-                    },
-                    borderRadius: 10,
-                    barThickness: 80,
-                },
-            ],
-        },
-        options: {
-            indexAxis: "y",
-            scales: {
-                x: { min: 0, max: 250, grid: { display: false } },
-                y: { grid: { display: false } },
-            },
-            plugins: { legend: { display: false } },
-        },
-    });
-});
 </script>
 
 <style scoped>
 .container {
     max-width: 1000px;
+}
+.espacio-header {
+    margin-top: 80px;  
 }
 
 .card{

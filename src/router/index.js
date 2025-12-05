@@ -35,6 +35,31 @@ const routes = [
     component: () => import('../views/chatbot.vue')
   },
   {
+    path : '/glucose-pattern',
+    name: 'GlucosPattern',
+    component: () => import('../views/glucose-pattern.vue')
+  },
+  {
+    path : '/insuline-bolus',
+    name: 'InsulineBolus',
+    component: () => import('../views/insuline-bolus.vue')
+  },
+  {
+    path : '/glucose-prediction',
+    name: 'GlucosePrediction',
+    component: () => import('../views/glucose-prediction.vue')
+  },
+  {
+    path : '/food-registration',
+    name: 'FoodRegistration',
+    component: () => import('../views/food-registration.vue')
+  },
+  {
+    path : '/register-data',
+    name: 'RegisterData',
+    component: () => import('../components/PatientManagement.vue')
+  },
+  {
     path : '/header',
     name: 'Header',
     component: () => import('../common/Header.vue')

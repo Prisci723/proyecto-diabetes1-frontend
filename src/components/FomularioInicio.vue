@@ -1,5 +1,5 @@
 <template>
-            <Header />
+      
   <div class="medical-info-container">
     <!-- Header -->
 

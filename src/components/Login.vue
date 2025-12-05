@@ -14,26 +14,14 @@
               </div>
 
               <form @submit.prevent="handleSubmit">
-                <div v-if="!isLogin" class="mb-3">
-                  <label for="name" class="form-label">Nombre completo</label>
+                <div class="mb-3">
+                  <label for="username" class="form-label">Nombre de usuario</label>
                   <input 
                     type="text" 
                     class="form-control" 
-                    id="name" 
-                    v-model="formData.name"
-                    placeholder="Tu nombre"
-                    required
-                  >
-                </div>
-
-                <div class="mb-3">
-                  <label for="email" class="form-label">Correo electrónico</label>
-                  <input 
-                    type="email" 
-                    class="form-control" 
-                    id="email" 
-                    v-model="formData.email"
-                    placeholder="tu@email.com"
+                    id="username" 
+                    v-model="formData.username"
+                    placeholder="Tu nombre de usuario"
                     required
                   >
                 </div>
@@ -66,8 +54,13 @@
                   <a href="#" class="text-decoration-none small forgot-link" @click.prevent="showForgotPasswordModal">¿Olvidaste tu contraseña?</a>
                 </div>
 
-                <button type="submit" class="btn btn-primary w-100 py-2 mb-3">
-                  {{ isLogin ? 'Iniciar Sesión' : 'Crear Cuenta' }}
+                <div v-if="errorMessage" class="alert alert-danger" role="alert">
+                  {{ errorMessage }}
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 py-2 mb-3" :disabled="loading">
+                  <span v-if="loading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                  {{ loading ? 'Procesando...' : (isLogin ? 'Iniciar Sesión' : 'Crear Cuenta') }}
                 </button>
               </form>
 
@@ -121,15 +114,18 @@
 </template>
 
 <script>
+import { usersAPI } from '@/services/api';
+
 export default {
   name: 'Login',
   data() {
     return {
       isLogin: true,
       isForgotPassword: false,
+      loading: false,
+      errorMessage: '',
       formData: {
-        name: '',
-        email: '',
+        username: '',
         password: '',
         confirmPassword: ''
       },
@@ -139,9 +135,9 @@ export default {
   methods: {
     toggleMode() {
       this.isLogin = !this.isLogin;
+      this.errorMessage = '';
       this.formData = {
-        name: '',
-        email: '',
+        username: '',
         password: '',
         confirmPassword: ''
       };
@@ -157,27 +153,61 @@ export default {
       this.isForgotPassword = false;
       this.forgotEmail = '';
     },
-    handleSubmit() {
-      if (this.isLogin) {
-        console.log('Login:', { 
-          email: this.formData.email, 
-          password: this.formData.password 
-        });
-        this.$router.push('/formularioInicio');
-      } else {
-        if (this.formData.password !== this.formData.confirmPassword) {
-          alert('Las contraseñas no coinciden');
-          return;
+    async handleSubmit() {
+      this.errorMessage = '';
+      this.loading = true;
+
+      try {
+        if (this.isLogin) {
+          // Login
+          const response = await usersAPI.login({
+            username: this.formData.username,
+            password: this.formData.password
+          });
+          
+          // Guardar datos del usuario en localStorage
+          localStorage.setItem('user', JSON.stringify(response.data));
+          localStorage.setItem('userId', response.data.id);
+          
+          console.log('Login exitoso:', response.data);
+          
+          // Redirigir según estado del formulario inicial
+          if (response.data.formulario_inicio) {
+            this.$router.push('/paginaInicio');
+          } else {
+            this.$router.push('/formularioInicio');
+          }
+        } else {
+          // Registro
+          if (this.formData.password !== this.formData.confirmPassword) {
+            this.errorMessage = 'Las contraseñas no coinciden';
+            this.loading = false;
+            return;
+          }
+          
+          const response = await usersAPI.register({
+            username: this.formData.username,
+            password: this.formData.password,
+            formulario_inicio: false
+          });
+          
+          console.log('Registro exitoso:', response.data);
+          alert('Cuenta creada exitosamente. Por favor inicia sesión.');
+          
+          // Cambiar a modo login
+          this.isLogin = true;
+          this.formData = {
+            username: '',
+            password: '',
+            confirmPassword: ''
+          };
         }
-        console.log('Register:', this.formData);
-        alert('Cuenta creada exitosamente');
-        this.isLogin = true;
-        this.formData = {
-          name: '',
-          email: '',
-          password: '',
-          confirmPassword: ''
-        };
+      } catch (error) {
+        console.error('Error:', error);
+        this.errorMessage = error.response?.data?.detail || 
+                           (this.isLogin ? 'Error al iniciar sesión' : 'Error al crear la cuenta');
+      } finally {
+        this.loading = false;
       }
     },
     handleForgotPassword() {
