@@ -1,0 +1,194 @@
+/* assets/styles/global.css - Estilos globales personalizados */
+
+/* Definir color principal como variable CSS */
+:root {
+  --primary-color: #00A79D;
+  --primary-dark: #008f86;
+  --primary-light: #33b8af;
+  --primary-lighter: #e6f7f6;
+}
+
+/* Override Bootstrap primary color globalmente */
+.btn-primary {
+  --bs-btn-bg: #00A79D;
+  --bs-btn-border-color: #00A79D;
+  --bs-btn-hover-bg: #008f86;
+  --bs-btn-hover-border-color: #008f86;
+  --bs-btn-active-bg: #007066;
+  --bs-btn-active-border-color: #007066;
+  --bs-btn-disabled-bg: #00A79D;
+  --bs-btn-disabled-border-color: #00A79D;
+}
+
+.btn-outline-primary {
+  --bs-btn-color: #00A79D;
+  --bs-btn-border-color: #00A79D;
+  --bs-btn-hover-bg: #00A79D;
+  --bs-btn-hover-border-color: #00A79D;
+  --bs-btn-active-bg: #008f86;
+  --bs-btn-active-border-color: #008f86;
+}
+
+.text-primary {
+  color: #00A79D !important;
+}
+
+.bg-primary {
+  background-color: #00A79D !important;
+}
+
+.border-primary {
+  border-color: #00A79D !important;
+}
+
+.alert-primary {
+  --bs-alert-color: #004d47;
+  --bs-alert-bg: #e6f7f6;
+  --bs-alert-border-color: #99e0dc;
+}
+
+.badge.bg-primary {
+  background-color: #00A79D !important;
+}
+
+/* Form controls con color principal */
+.form-check-input:checked {
+  background-color: #00A79D;
+  border-color: #00A79D;
+}
+
+.form-check-input:focus {
+  border-color: #00A79D;
+  box-shadow: 0 0 0 0.25rem rgba(0, 167, 157, 0.25);
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: #00A79D;
+  box-shadow: 0 0 0 0.25rem rgba(0, 167, 157, 0.25);
+}
+
+/* Links */
+a {
+  color: #00A79D;
+}
+
+a:hover {
+  color: #008f86;
+}
+
+/* Tablas */
+.table-primary {
+  --bs-table-bg: rgba(0, 167, 157, 0.1);
+  --bs-table-border-color: rgba(0, 167, 157, 0.2);
+}
+
+/* Progress bars */
+.progress-bar {
+  background-color: #00A79D;
+}
+
+/* Breadcrumbs */
+.breadcrumb-item.active {
+  color: #00A79D;
+}
+
+/* Pagination */
+.pagination .page-link {
+  color: #00A79D;
+}
+
+.pagination .page-item.active .page-link {
+  background-color: #00A79D;
+  border-color: #00A79D;
+}
+
+/* Spinners */
+.spinner-border.text-primary {
+  color: #00A79D !important;
+}
+
+/* Smooth transitions */
+* {
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, 
+              border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #00A79D;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #008f86;
+}
+
+/* Utility classes personalizadas */
+.shadow-primary {
+  box-shadow: 0 0.5rem 1rem rgba(0, 167, 157, 0.15) !important;
+}
+
+.border-primary-light {
+  border-color: rgba(0, 167, 157, 0.3) !important;
+}
+
+.bg-primary-light {
+  background-color: rgba(0, 167, 157, 0.1) !important;
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(0, 167, 157, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(0, 167, 157, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 167, 157, 0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease;
+}
+
+.slide-in-right {
+  animation: slideInRight 0.3s ease;
+}
+
+.espacio-header {
+  padding-top: 60px;
+}
