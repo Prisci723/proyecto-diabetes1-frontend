@@ -300,7 +300,7 @@ import { ref, reactive, computed } from 'vue';
 import axios from 'axios';
 import Header from '@/common/Header.vue';
 // State
-const apiBaseUrl = ref('https://9b9v7hgp-8000.brs.devtunnels.ms');
+const apiBaseUrl = ref('/api');
 const loading = ref(false);
 const error = ref(null);
 const successMessage = ref(null);

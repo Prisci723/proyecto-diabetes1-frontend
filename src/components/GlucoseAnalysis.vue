@@ -375,7 +375,7 @@ import { ref } from 'vue';
 import axios from 'axios';
 
 // State
-const apiBaseUrl = ref('https://9b9v7hgp-8000.brs.devtunnels.ms');
+const apiBaseUrl = ref('/api');
 const patientId = ref('');
 const analysisDays = ref(7);
 const loading = ref(false);
