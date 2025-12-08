@@ -7,7 +7,7 @@ import { ref, computed } from 'vue'
  */
 export function useAsistenteDiabetes() {
   // Configuración de la API
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+  const API_URL = import.meta.env.VITE_API_URL || '/api'
 
   // Estado reactivo
   const categorias = ref([])

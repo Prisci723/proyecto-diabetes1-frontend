@@ -368,7 +368,7 @@ import Header from '@/common/Header.vue'
 const sidebarRef = ref(null)
 
 // Configuración de la API
-const apiBaseUrl = ref('https://9b9v7hgp-8000.brs.devtunnels.ms/prediction')
+const apiBaseUrl = ref('/api/prediction')
 
 // Estado de la API
 const apiStatus = reactive({

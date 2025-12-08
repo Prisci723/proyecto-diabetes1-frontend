@@ -365,7 +365,7 @@
 import { ref, computed, watch } from 'vue';
 import Header from '../common/Header.vue';
 // URL del API Backend
-const API_URL = 'https://9b9v7hgp-8000.brs.devtunnels.ms/alimentos';
+const API_URL = '/api/alimentos';
 import { useRouter } from 'vue-router';
 const router = useRouter();
 

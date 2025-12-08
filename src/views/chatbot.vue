@@ -170,7 +170,7 @@ const messagesArea = ref(null);
 const sidebarRef = ref(null);
 
 // URL de la API
-const apiUrl = 'http://localhost:8000';
+const apiUrl = '/api/chatbot/chatbot';
 
 // Configurar axios para manejar errores globalmente
 axios.defaults.timeout = 500000; // 100 segundos timeout

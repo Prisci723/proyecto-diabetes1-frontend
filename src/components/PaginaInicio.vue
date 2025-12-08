@@ -34,6 +34,12 @@
 import { ref } from "vue";
 import { useRouter } from 'vue-router';
 import Header from '@/common/Header.vue';
+import comidaImg from '@/assets/comida.png'
+import insulinaImg from '@/assets/insulina.png'
+import glucoseImg from '@/assets/glucose.png'
+import analisisImg from '@/assets/analisis_patrones.png'
+import chatbotImg from '@/assets/chatbot.png'
+
 
 const router = useRouter();
 const sidebarRef = ref(null);
@@ -48,11 +54,11 @@ const handleToggleMenu = () => {
 const glucosaActual = ref((Math.random() * (180 - 70) + 70).toFixed(1));
 
 const funciones = [
-    { titulo: "Conteo de carbohidratos", icon: "/src/assets/comida.png", route : "/food-registration" },
-    { titulo: "Optimización dosis de insulina", icon: "/src/assets/insulina.png", route : "/insuline-bolus" },
-    { titulo: "Predicción de glucosa", icon: "/src/assets/glucose.png", route : "/glucose-prediction" },
-    { titulo: "Patrones glucémicos", icon: "/src/assets/analisis_patrones.png", route : "/glucose-pattern" },
-    { titulo: "CHATBOT", icon: "/src/assets/chatbot.png", route : "/chatbot" },
+    { titulo: "Conteo de carbohidratos", icon: comidaImg, route : "/food-registration" },
+    { titulo: "Optimización dosis de insulina", icon: insulinaImg, route : "/insuline-bolus" },
+    { titulo: "Predicción de glucosa", icon: glucoseImg, route : "/glucose-prediction" },
+    { titulo: "Patrones glucémicos", icon: analisisImg, route : "/glucose-pattern" },
+    { titulo: "CHATBOT", icon: chatbotImg, route : "/chatbot" },
 ];
 </script>
 

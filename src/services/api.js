@@ -3,7 +3,7 @@ import axios from 'axios';
 
 // Configuración base de Axios
 const apiClient = axios.create({
-  baseURL: 'https://9b9v7hgp-8000.brs.devtunnels.ms',
+  baseURL: '/api',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',

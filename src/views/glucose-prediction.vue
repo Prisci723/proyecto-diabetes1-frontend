@@ -438,7 +438,7 @@ import { Chart } from 'chart.js/auto'
 import Header from '@/common/Header.vue'
 
 // Configuración
-const API_BASE_URL = 'https://9b9v7hgp-8000.brs.devtunnels.ms/glucose-prediction'
+const API_BASE_URL = '/api/glucose-prediction'
 
 // Estado
 const apiConnected = ref(false)
